@@ -83,10 +83,10 @@ get_current_hostname() {
 display_info() {
     load_config
     get_os_info
+    get_current_hostname
     get_uptime_info
     get_current_time
     get_current_date
-    get_current_hostname
 }
 
 # Display information
