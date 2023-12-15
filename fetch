@@ -1,0 +1,93 @@
+#!/bin/bash
+
+# Default configuration values
+CONFIG_DIR="$HOME/.config/fetch"
+CONFIG_FILE="$CONFIG_DIR/conf"
+
+# Create default configuration if it doesn't exist
+create_default_config() {
+    echo "ENABLE_OS=true" > "$CONFIG_FILE"
+    echo "ENABLE_UPTIME=true" >> "$CONFIG_FILE"
+    echo "ENABLE_TIME=true" >> "$CONFIG_FILE"
+    echo "ENABLE_DATE=true" >> "$CONFIG_FILE"
+    echo "ENABLE_HOST=true" >> "$CONFIG_FILE"
+}
+
+# Function to load configuration from file
+load_config() {
+    if [ ! -f "$CONFIG_FILE" ]; then
+        mkdir -p "$CONFIG_DIR"
+        create_default_config
+    fi
+
+    source "$CONFIG_FILE"
+}
+
+# Function to get the operating system information
+get_os_info() {
+    if [ "$ENABLE_OS" = true ]; then
+        if [ -e /etc/os-release ]; then
+            source /etc/os-release
+            os="$(echo "$ID" | tr '[:upper:]' '[:lower:]')"
+        elif [ -e /etc/lsb-release ]; then
+            source /etc/lsb-release
+            os="$(echo "$DISTRIB_ID" | tr '[:upper:]' '[:lower:]')"
+        elif [ -e /etc/debian_version ]; then
+            os="debian"
+        elif [ -e /etc/redhat-release ]; then
+            os="redhat"
+        elif [ -e /etc/gentoo-release ]; then
+            os="gentoo"
+        elif [ -e /etc/arch-release ]; then
+            os="arch"
+        else
+            os="unknown"
+        fi
+        echo "os ~ $os"
+    fi
+}
+
+# Function to get the uptime information
+get_uptime_info() {
+    if [ "$ENABLE_UPTIME" = true ]; then
+        uptime_info="$(uptime -p | sed 's/up //' | tr -s ' ')"
+        echo "uptime ~ $uptime_info"
+    fi
+}
+
+# Function to get the current time
+get_current_time() {
+    if [ "$ENABLE_TIME" = true ]; then
+        current_time="$(date +"%T")"
+        echo "time ~ $current_time"
+    fi
+}
+
+# Function to get the current date in mm/dd format
+get_current_date() {
+    if [ "$ENABLE_DATE" = true ]; then
+        current_date="$(date +"%m/%d")"
+        echo "date ~ $current_date"
+    fi
+}
+
+# Function to get the current hostname
+get_current_hostname() {
+    if [ "$ENABLE_HOST" = true ]; then
+        current_hostname="$(hostname)"
+        echo "host ~ $current_hostname"
+    fi
+}
+
+# Main function to display information
+display_info() {
+    load_config
+    get_os_info
+    get_uptime_info
+    get_current_time
+    get_current_date
+    get_current_hostname
+}
+
+# Display information
+display_info
