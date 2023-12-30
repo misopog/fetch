@@ -74,7 +74,7 @@ get_current_date() {
 # Function to get the current hostname
 get_current_hostname() {
     if [ "$ENABLE_HOST" = true ]; then
-        current_hostname="$(hostname)"
+        current_hostname="$(uname -n)"
         echo "host ~ $current_hostname"
     fi
 }
